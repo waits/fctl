@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os/exec"
 	"strings"
 )
 
@@ -43,8 +44,16 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func Static(env *Env, w http.ResponseWriter, r *http.Request) (int, error) {
 	switch r.URL.Path {
 	case "/":
-		return http.StatusOK, RenderTemplate(env, w, "home", nil)
+		return http.StatusOK, RenderTemplate(env, w, "home", gameInfo())
 	default:
 		return http.StatusNotFound, errors.New("handler: page not found")
 	}
+}
+
+func gameInfo() string {
+	out, err := exec.Command("fctl", "status").Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(out)
 }
