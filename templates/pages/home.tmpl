@@ -1,10 +1,20 @@
 {{define "title"}}Factorio Dashboard{{end}}
 {{define "content"}}
   <h1>Factorio Dashboard</h1>
-  <hr>
 
-  <section>
+  <p>
     <strong>Status</strong>
-    <div><em>{{ . }}</em></div>
-  </section>
+    <div><em>{{.Status}}</em></div>
+  </p>
+
+  <p>
+    <strong>Players</strong>
+    <ul>
+      {{range $index, $player := .Players}}
+        <li>{{.}}</li>
+      {{else}}
+        <li><em>No players have joined yet.</em></li>
+      {{end}}
+    </ul>
+  </p>
 {{end}}

@@ -15,6 +15,11 @@ type Env struct {
 	TemplatePath string
 }
 
+type GameInfo struct {
+	Players []string
+	Status  string
+}
+
 // Handler wraps a route handler with an Env.
 type Handler struct {
 	*Env
@@ -44,14 +49,25 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func Static(env *Env, w http.ResponseWriter, r *http.Request) (int, error) {
 	switch r.URL.Path {
 	case "/":
-		return http.StatusOK, RenderTemplate(env, w, "home", gameInfo())
+		return http.StatusOK, RenderTemplate(env, w, "home", getInfo())
 	default:
 		return http.StatusNotFound, errors.New("handler: page not found")
 	}
 }
 
-func gameInfo() string {
-	out, err := exec.Command("fctl", "status").Output()
+func getInfo() *GameInfo {
+	p := strings.Split(send("players"), "\n")
+	if len(p) > 1 {
+		p = p[:len(p)-2]
+	}
+	return &GameInfo{
+		p,
+		send("status"),
+	}
+}
+
+func send(cmd string) string {
+	out, err := exec.Command("fctl", cmd).Output()
 	if err != nil {
 		log.Fatal(err)
 	}
