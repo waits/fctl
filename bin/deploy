@@ -24,6 +24,7 @@ ssh -i etc/id_ecdsa -o StrictHostKeyChecking=no $HOST <<-EOF
     tar -xzf $TMP -C $DIR --strip-components=1
 
     ln -nsf $DIR $ROOT/cur
+    setcap 'cap_net_bind_service=+ep' $DIR/fctl
     sudo service fctl restart
 
     curl -I https://factorio.waits.io
