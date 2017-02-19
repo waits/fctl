@@ -1,0 +1,14 @@
+[Unit]
+Description=Factorio web dashboard
+After=factorio.service
+
+[Service]
+Type=simple
+User=factorio
+Group=factorio
+WorkingDirectory=/opt/fctl/cur
+
+ExecStart=/opt/fctl/cur/fctl --host factorio.waits.io --certs /opt/fctl/certs
+
+[Install]
+WantedBy=multi-user.target

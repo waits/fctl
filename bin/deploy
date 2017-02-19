@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Bundles the application, uploads it to the server, and restarts the daemon.
+
+set -e -x
+
+HOST=root@factorio.waits.io
+ROOT=/opt/ftcl
+HASH=$(git rev-parse --short=7 HEAD)
+DIR=$ROOT/rel/$HASH
+TMP=/tmp/ftcl-$HASH.tar.gz
+SERVICE_DIR=/etc/systemd/system
+
+tar -czf ftcl.tar.gz ./bin/backup ./static ./template ./ftcl
+scp -i etc/id_ecdsa -o StrictHostKeyChecking=no ftcl.tar.gz $HOST:$TMP
+scp -i etc/id_ecdsa -o StrictHostKeyChecking=no etc/ftcl.service $HOST:$SERVICE_DIR
+
+ssh -i etc/id_ecdsa -o StrictHostKeyChecking=no $HOST <<-EOF
+    set -e -x
+
+    systemctl daemon-reload
+
+    mkdir -p $DIR
+    tar -xzf $TMP -C $DIR --strip-components=1
+
+    $DIR/bin/backup
+
+    ln -nsf $DIR $ROOT/cur
+    sudo service ftcl restart
+
+    curl -I https://factorio.waits.io
+
+    rm $TMP
+    cd $ROOT/rel && ls -t | tail -n +6 | xargs rm -rf
+EOF

@@ -1,0 +1,17 @@
+language: go
+go:
+- 1.7.5
+- 1.8
+go_import_path: github.com/waits/fctl
+env: GIMME_OS=linux GIMME_ARCH=amd64
+deploy:
+  provider: script
+  script: bin/deploy
+  on:
+    go: 1.8
+  skip_cleanup: true
+before_install:
+- openssl aes-256-cbc -K $encrypted_6cc80f84d04d_key -iv $encrypted_6cc80f84d04d_iv -in etc/id_ecdsa.enc -out etc/id_ecdsa -d
+- chmod 600 etc/id_ecdsa
+script:
+- bin/build
