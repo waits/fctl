@@ -16,8 +16,9 @@ type Env struct {
 }
 
 type GameInfo struct {
-	Players []string
-	Status  string
+	Players   []string
+	Status    string
+	Evolution string
 }
 
 // Handler wraps a route handler with an Env.
@@ -63,11 +64,12 @@ func getInfo() *GameInfo {
 	return &GameInfo{
 		p,
 		send("status"),
+		send("cmd", "/evolution"),
 	}
 }
 
-func send(cmd string) string {
-	out, err := exec.Command("fctl", cmd).Output()
+func send(args ...string) string {
+	out, err := exec.Command("fctl", args...).Output()
 	if err != nil {
 		log.Fatal(err)
 	}
