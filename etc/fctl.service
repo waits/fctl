@@ -7,8 +7,8 @@ Type=simple
 User=factorio
 Group=factorio
 WorkingDirectory=/opt/fctl/cur
-
 ExecStart=/opt/fctl/cur/fctl --host factorio.waits.io --certs /opt/fctl/certs
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
